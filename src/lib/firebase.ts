@@ -1,7 +1,7 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeApp, getApps, getApp, type FirebaseOptions } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
-const firebaseConfig = {
+const firebaseConfig: FirebaseOptions = {
   projectId: 'studio-3336351462-b5547',
   appId: '1:307554428473:web:bb93cb9ce8540568b68fe8',
   apiKey: 'AIzaSyBSYY-QcV7HHTt_-jkt-GTNyaM-YjDOd5Q',
@@ -10,9 +10,16 @@ const firebaseConfig = {
   messagingSenderId: '307554428473',
 };
 
-// Initialize Firebase
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
+function getFirebaseInstances() {
+  if (!firebaseConfig.authDomain) {
+    throw new Error('Firebase authDomain is not configured.');
+  }
+  const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  const auth = getAuth(app);
+  const googleProvider = new GoogleAuthProvider();
+  return { app, auth, googleProvider };
+}
+
+const { app, auth, googleProvider } = getFirebaseInstances();
 
 export { app, auth, googleProvider };
