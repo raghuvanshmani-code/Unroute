@@ -26,9 +26,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
-       if (!user && pathname !== '/login') {
-         router.push('/login');
-       }
+      if (user) {
+        if (pathname === '/login') {
+          router.push('/dashboard');
+        }
+      } else {
+         if (pathname !== '/login') {
+           router.push('/login');
+         }
+      }
     });
 
     return () => unsubscribe();
@@ -37,20 +43,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     setLoading(true);
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      setUser(result.user);
-      router.push('/dashboard');
+      await signInWithPopup(auth, googleProvider);
+      // The onAuthStateChanged listener will handle the user state update and redirect.
     } catch (error) {
       console.error("Error signing in with Google", error);
     } finally {
-      setLoading(false);
+      // Don't set loading to false here, let the listener handle it.
     }
   };
 
   const logout = async () => {
     try {
       await signOut(auth);
-      router.push('/login');
+      // The onAuthStateChanged listener will handle redirecting to /login
     } catch (error) {
       console.error("Error signing out", error);
     }
