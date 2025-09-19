@@ -9,6 +9,7 @@ import {
   Sparkles,
   Wand2,
   Home,
+  History,
 } from 'lucide-react';
 
 export const URGE_TYPES = [
@@ -34,6 +35,6 @@ export const NAV_LINKS: {
   end?: boolean;
 }[] = [
   { href: '/dashboard', label: 'Dashboard', icon: Home, end: true },
-  { href: '/progress', label: 'Progress', icon: BarChart3 },
+  { href: '/history', label: 'History', icon: History },
   { href: '/tools', label: 'Tools', icon: Wand2 },
 ];
