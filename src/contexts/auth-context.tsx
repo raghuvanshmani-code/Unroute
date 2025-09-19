@@ -1,12 +1,17 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { getAuth, onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth';
-import { app, googleProvider } from '@/lib/firebase';
-import { useRouter, usePathname } from 'next/navigation';
+import { createContext, useContext, useState, ReactNode } from 'react';
+
+// Mock user data
+const mockUser = {
+  uid: 'mock-user-id',
+  displayName: 'Valued User',
+  email: 'user@example.com',
+  photoURL: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
+};
 
 interface AuthContextType {
-  user: User | null;
+  user: typeof mockUser | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
@@ -15,50 +20,23 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const auth = getAuth(app);
-  const router = useRouter();
-  const pathname = usePathname();
-
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-      if (user) {
-        if (pathname === '/login') {
-          router.push('/dashboard');
-        }
-      } else {
-         if (pathname !== '/login') {
-           router.push('/login');
-         }
-      }
-    });
-
-    return () => unsubscribe();
-  }, [auth, router, pathname]);
+  const [user, setUser] = useState<typeof mockUser | null>(mockUser);
+  const [loading, setLoading] = useState(false);
 
   const signInWithGoogle = async () => {
+    console.log('signInWithGoogle called, but is mocked.');
     setLoading(true);
-    try {
-      await signInWithPopup(auth, googleProvider);
-      // The onAuthStateChanged listener will handle the user state update and redirect.
-    } catch (error) {
-      console.error("Error signing in with Google", error);
-    } finally {
-      // Don't set loading to false here, let the listener handle it.
-    }
+    // Simulate a sign-in
+    setTimeout(() => {
+        setUser(mockUser);
+        setLoading(false);
+    }, 500);
   };
 
   const logout = async () => {
-    try {
-      await signOut(auth);
-      // The onAuthStateChanged listener will handle redirecting to /login
-    } catch (error) {
-      console.error("Error signing out", error);
-    }
+    console.log('logout called, but is mocked.');
+    // In a real app, you'd redirect. Here we just clear the user.
+    setUser(null);
   };
 
   const value = { user, loading, signInWithGoogle, logout };
