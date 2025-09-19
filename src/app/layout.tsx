@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/contexts/auth-context';
 import './globals.css';
+import { HistoryProvider } from '@/contexts/history-context';
 
 export const metadata: Metadata = {
   title: 'Unroute',
@@ -30,8 +31,10 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <AuthProvider>
-          {children}
-          <Toaster />
+          <HistoryProvider>
+            {children}
+            <Toaster />
+          </HistoryProvider>
         </AuthProvider>
       </body>
     </html>

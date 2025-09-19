@@ -12,46 +12,31 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { URGE_TYPES } from '@/lib/constants';
 import { formatDistanceToNow } from 'date-fns';
-
-const mockHistory = [
-  {
-    id: 1,
-    urgeType: 'social media',
-    intensity: 7,
-    outcome: 'resisted',
-    date: new Date(Date.now() - 2 * 60 * 60 * 1000),
-  },
-  {
-    id: 2,
-    urgeType: 'food',
-    intensity: 5,
-    outcome: 'acted',
-    date: new Date(Date.now() - 5 * 60 * 60 * 1000),
-  },
-  {
-    id: 3,
-    urgeType: 'shopping',
-    intensity: 8,
-    outcome: 'resisted',
-    date: new Date(Date.now() - 24 * 60 * 60 * 1000),
-  },
-  {
-    id: 4,
-    urgeType: 'sex',
-    intensity: 9,
-    outcome: 'acted',
-    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-  },
-  {
-    id: 5,
-    urgeType: 'social media',
-    intensity: 6,
-    outcome: 'resisted',
-    date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-  },
-];
+import { useHistory } from '@/contexts/history-context';
+import { Smile, Frown } from 'lucide-react';
 
 export function HistoryList() {
+  const { history } = useHistory();
+
+  if (history.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-headline">Recent Urges</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center gap-4 py-8 text-center">
+            <Smile className="h-16 w-16 text-muted-foreground" />
+            <h3 className="font-headline text-xl">No History Yet</h3>
+            <p className="text-muted-foreground">
+              Your logged urges will appear here.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -68,10 +53,10 @@ export function HistoryList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockHistory.map(entry => {
+            {history.map((entry, index) => {
               const urgeInfo = URGE_TYPES.find(u => u.id === entry.urgeType);
               return (
-                <TableRow key={entry.id}>
+                <TableRow key={index}>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       {urgeInfo && <urgeInfo.icon className="h-4 w-4" />}
@@ -82,7 +67,9 @@ export function HistoryList() {
                   <TableCell>
                     <Badge
                       variant={
-                        entry.outcome === 'resisted' ? 'secondary' : 'destructive'
+                        entry.outcome === 'resisted'
+                          ? 'secondary'
+                          : 'destructive'
                       }
                       className={
                         entry.outcome === 'resisted'
@@ -90,6 +77,11 @@ export function HistoryList() {
                           : ''
                       }
                     >
+                      {entry.outcome === 'resisted' ? (
+                        <Smile className="mr-1 h-3 w-3" />
+                      ) : (
+                        <Frown className="mr-1 h-3 w-3" />
+                      )}
                       {entry.outcome}
                     </Badge>
                   </TableCell>

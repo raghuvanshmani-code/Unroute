@@ -25,6 +25,8 @@ import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useHistory } from '@/contexts/history-context';
+import type { HistoryEntry } from '@/contexts/history-context';
 
 export const logUrgeSchema = z.object({
   urgeType: z.enum(URGE_TYPES.map(u => u.id) as [string, ...string[]], {
@@ -43,6 +45,7 @@ export default function LogUrgeFlow() {
     React.useState<InterventionOutput | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [timeLeft, setTimeLeft] = React.useState(0);
+  const { addHistoryEntry } = useHistory();
 
   const { toast } = useToast();
 
@@ -59,6 +62,7 @@ export default function LogUrgeFlow() {
     handleSubmit,
     control,
     watch,
+    getValues,
     formState: { errors },
   } = form;
   const urgeType = watch('urgeType');
@@ -100,8 +104,19 @@ export default function LogUrgeFlow() {
     setStep('DELAY');
   };
 
+  const handleEndFlow = (outcome: HistoryEntry['outcome']) => {
+    const values = getValues();
+    addHistoryEntry({
+      urgeType: values.urgeType,
+      intensity: values.intensity,
+      outcome: outcome,
+      date: new Date(),
+    });
+    resetFlow();
+  };
+
   const resetFlow = () => {
-    form.reset();
+    form.reset({ intensity: 5, motivation: 5, ability: 5 });
     setStep('INITIAL');
     setIntervention(null);
     setIsLoading(false);
@@ -204,7 +219,12 @@ export default function LogUrgeFlow() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => setStep('FOGG_MODEL')}>Next</Button>
+              <Button
+                onClick={() => urgeType && setStep('FOGG_MODEL')}
+                disabled={!urgeType}
+              >
+                Next
+              </Button>
             </CardFooter>
           </>
         );
@@ -309,7 +329,7 @@ export default function LogUrgeFlow() {
               </p>
             </CardContent>
             <CardFooter className="flex flex-col gap-4 sm:flex-row sm:justify-between">
-              <Button variant="ghost" onClick={resetFlow}>
+              <Button variant="ghost" onClick={() => handleEndFlow('resisted')}>
                 I did it! / Urge passed
               </Button>
               <Button onClick={startDelay}>Delay 20 minutes</Button>
@@ -344,10 +364,13 @@ export default function LogUrgeFlow() {
               </Button>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Button variant="ghost" onClick={resetFlow}>
+              <Button variant="ghost" onClick={() => handleEndFlow('resisted')}>
                 I&apos;m done, the urge faded
               </Button>
-              <Button variant="destructive" onClick={resetFlow}>
+              <Button
+                variant="destructive"
+                onClick={() => handleEndFlow('acted')}
+              >
                 I acted on the urge
               </Button>
             </CardFooter>
