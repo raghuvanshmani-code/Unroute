@@ -24,39 +24,47 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 
-// Mock Data
-const urgesData = [
-  { date: 'Mon', resisted: 4, acted: 2 },
-  { date: 'Tue', resisted: 3, acted: 1 },
-  { date: 'Wed', resisted: 5, acted: 1 },
-  { date: 'Thu', resisted: 2, acted: 3 },
-  { date: 'Fri', resisted: 6, acted: 0 },
-  { date: 'Sat', resisted: 4, acted: 2 },
-  { date: 'Sun', resisted: 7, acted: 1 },
-];
+// Function to generate random data for demonstration
+const generateUrgesData = () => {
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  return days.map(day => ({
+    date: day,
+    resisted: Math.floor(Math.random() * 8),
+    acted: Math.floor(Math.random() * 4),
+  }));
+};
 
-const intensityData = [
-  { week: 'Week 1', avgIntensity: 8.2 },
-  { week: 'Week 2', avgIntensity: 7.5 },
-  { week: 'Week 3', avgIntensity: 6.8 },
-  { week: 'Week 4', avgIntensity: 6.1 },
-];
+const generateIntensityData = () => {
+  return [
+    { week: 'Week 1', avgIntensity: Math.random() * 3 + 6 },
+    { week: 'Week 2', avgIntensity: Math.random() * 2 + 5 },
+    { week: 'Week 3', avgIntensity: Math.random() * 2 + 4 },
+    { week: 'Week 4', avgIntensity: Math.random() * 2 + 3 },
+  ].map(d => ({ ...d, avgIntensity: Number(d.avgIntensity.toFixed(1)) }));
+};
 
-const triggersData = [
-  { name: 'Boredom', value: 400 },
-  { name: 'Stress', value: 300 },
-  { name: 'Loneliness', value: 200 },
-  { name: 'Time of Day', value: 100 },
-];
+const generateTriggersData = () => {
+  const triggers = ['Boredom', 'Stress', 'Loneliness', 'Time of Day'];
+  return triggers.map(trigger => ({
+    name: trigger,
+    value: Math.floor(Math.random() * 300 + 100),
+  }));
+};
 
 const COLORS = ['#63BDBD', '#FFB347', '#8884d8', '#82ca9d'];
 
 // Chart Components
 export function UrgesChart() {
+  const [data, setData] = useState<any[]>([]);
+  useEffect(() => {
+    setData(generateUrgesData());
+  }, []);
+
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={urgesData}>
+      <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
         <XAxis dataKey="date" />
         <YAxis />
@@ -75,9 +83,14 @@ export function UrgesChart() {
 }
 
 export function IntensityChart() {
+  const [data, setData] = useState<any[]>([]);
+  useEffect(() => {
+    setData(generateIntensityData());
+  }, []);
+
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={intensityData}>
+      <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
         <XAxis dataKey="week" />
         <YAxis domain={[0, 10]} />
@@ -101,11 +114,16 @@ export function IntensityChart() {
 }
 
 export function TriggersChart() {
+  const [data, setData] = useState<any[]>([]);
+  useEffect(() => {
+    setData(generateTriggersData());
+  }, []);
+
   return (
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>
         <Pie
-          data={triggersData}
+          data={data}
           cx="50%"
           cy="50%"
           labelLine={false}
@@ -116,7 +134,7 @@ export function TriggersChart() {
             `${name} ${(percent * 100).toFixed(0)}%`
           }
         >
-          {triggersData.map((entry, index) => (
+          {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
