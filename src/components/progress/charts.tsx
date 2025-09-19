@@ -19,7 +19,6 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -62,6 +61,8 @@ export function UrgesChart() {
     setData(generateUrgesData());
   }, []);
 
+  if (!data.length) return null;
+
   return (
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={data}>
@@ -87,6 +88,8 @@ export function IntensityChart() {
   useEffect(() => {
     setData(generateIntensityData());
   }, []);
+  
+  if (!data.length) return null;
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -118,6 +121,8 @@ export function TriggersChart() {
   useEffect(() => {
     setData(generateTriggersData());
   }, []);
+
+  if (!data.length) return null;
 
   return (
     <ResponsiveContainer width="100%" height={300}>
