@@ -1,5 +1,4 @@
 import { AppLayout } from '@/components/app-layout';
-import ImplementationIntentionForm from '@/components/tools/implementation-intention-form';
 import UrgeSurfingTool from '@/components/tools/urge-surfing-tool';
 
 export default function ToolsPage() {
@@ -12,8 +11,7 @@ export default function ToolsPage() {
             Use these exercises to build resilience and create new habits.
           </p>
         </div>
-        <div className="grid gap-6 lg:grid-cols-2">
-          <ImplementationIntentionForm />
+        <div className="grid gap-6 lg:grid-cols-1">
           <UrgeSurfingTool />
         </div>
       </div>
