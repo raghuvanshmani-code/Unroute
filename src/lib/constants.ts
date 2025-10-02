@@ -1,6 +1,5 @@
 import {
   type Icon,
-  BarChart3,
   Heart,
   ShoppingBag,
   Smartphone,
